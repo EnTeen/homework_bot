@@ -122,7 +122,6 @@ def main():
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     current_timestamp = int(time.time())
     check_result = check_tokens()
-    old_message = ''
     if check_result is False:
         message = 'Не доступны переменные окружения'
         logger.critical(message)
@@ -136,9 +135,8 @@ def main():
             homework = check_response(response)
             if homework is not None:
                 message = parse_status(homework)
-                if message is not None and message != old_message:
+                if message is not None:
                     send_message(bot, message)
-                    old_message = message
             time.sleep(RETRY_TIME)
 
         except Exception as error:
