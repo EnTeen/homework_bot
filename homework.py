@@ -54,7 +54,7 @@ def send_message(bot, message):
 
 def get_api_answer(current_timestamp):
     """Отправляет запрос к API."""
-    timestamp = current_timestamp - CHECK_TIME
+    timestamp = current_timestamp
     params = {'from_date': timestamp}
     try:
         response = requests.get(ENDPOINT, headers=HEADERS, params=params)
@@ -120,7 +120,7 @@ def log_and_inform(bot, message):
 def main():
     """Основная логика работы бота."""
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    current_timestamp = int(time.time())
+    current_timestamp = int(time.time()) - CHECK_TIME
     check_result = check_tokens()
     if check_result is False:
         message = 'Не доступны переменные окружения'
