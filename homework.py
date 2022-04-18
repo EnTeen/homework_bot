@@ -27,11 +27,12 @@ HOMEWORK_STATUSES = {
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
 }
 
+
 logging.basicConfig(
+    handlers=[logging.StreamHandler()],
     level=logging.INFO,
     format='%(asctime)s, %(levelname)s, %(message)s',
 )
-logger = logging.getLogger(__name__)
 
 error_sent_messages = []
 
