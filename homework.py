@@ -31,6 +31,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s, %(levelname)s, %(message)s'
 )
+
 logger = logging.getLogger(__name__)
 
 error_sent_messages = []
@@ -38,6 +39,7 @@ error_sent_messages = []
 
 class APIAnswerError(Exception):
     """Кастомная ошибка API."""
+
     pass
 
 
@@ -69,7 +71,7 @@ def get_api_answer(current_timestamp):
 
 
 def check_response(response):
-    """Проверяет коректность полученного ответа"""
+    """Проверяет коректность полученного ответа."""
     if not isinstance(response, dict):
         message = 'Полученный отвт не словарь'
         raise TypeError(message)
@@ -81,7 +83,7 @@ def check_response(response):
 
 
 def parse_status(homework):
-    """Подготовка ответа"""
+    """Подготовка ответа."""
     keys = ['status', 'homework_name']
     for key in keys:
         if key not in homework:
@@ -103,7 +105,7 @@ def check_tokens():
 
 
 def log_and_inform(bot, message):
-    """Обработка ошибки  ERROR. Отправляет уведомление"""
+    """Обработка ошибки  ERROR. Отправляет уведомление."""
     logger.error(message)
     if message not in error_sent_messages:
         try:
@@ -117,7 +119,7 @@ def log_and_inform(bot, message):
 def main():
     """Основная логика работы бота."""
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    current_timestamp = int(time.time())-CHECK_TIME
+    current_timestamp = int(time.time()) - CHECK_TIME
     check_result = check_tokens()
     if check_result is False:
         message = 'Не доступны переменные окружения'
