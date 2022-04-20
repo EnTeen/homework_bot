@@ -58,13 +58,7 @@ def get_api_answer(current_timestamp):
         if response.status_code != HTTPStatus.OK:
             raise Exception('ENDPOINT не отвечает')
     except requests.exceptions.RequestException as error:
-        logging.error("OOps: Something Else", error)
-    except requests.exceptions.HTTPError as error:
-        logging.error("Ошибка Http:", error)
-    except requests.exceptions.ConnectionError as error:
-        logging.error("Ошибка подключения:", error)
-    except requests.exceptions.Timeout as error:
-        logging.error("Время подключения вышло:", error)
+        logging.error("Ошибка запроса к API", error)
     except Exception:
         raise APIAnswerError('Ошибка API')
     return response.json()
