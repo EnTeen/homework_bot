@@ -127,11 +127,11 @@ def main():
     while True:
         try:
             response = get_api_answer(current_timestamp)
-            current_timestamp = response['current_date']
             if check_response(response):
                 homework = check_response(response)[0]
                 message = parse_status(homework)
                 send_message(bot, message)
+            current_timestamp = response['current_date']
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
             send_message(bot, message)
