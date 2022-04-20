@@ -58,7 +58,7 @@ def get_api_answer(current_timestamp):
         if response.status_code != HTTPStatus.OK:
             raise Exception('ENDPOINT не отвечает')
     except requests.exceptions.RequestException as error:
-        logging.error("Ошибка запроса к API", error)
+        raise logging.error("Ошибка запроса к API", error)
     except Exception:
         raise APIAnswerError('Ошибка API')
     return response.json()
@@ -68,15 +68,18 @@ def check_response(response):
     """Проверяет коректность полученного ответа."""
     if not isinstance(response, dict):
         raise TypeError('Полученный ответ не словарь')
-    if not response['homeworks']:
+    if not response['homeworks'] and not response['current_date']:
         raise IndexError('В ответе нет домашней работы')
     try:
-        homework = response.get('homeworks')
+        homeworks = response.get('homeworks')
+        current_date = response.get('current_date')
     except Exception as error:
         logging.error(f'Ошибка в фомирвоании списка homeworks: {error}')
-    if not isinstance(homework, list):
-        raise TypeError('Ответ не в виде списка:')
-    return homework
+    if not isinstance(homeworks, list):
+        raise TypeError('Homeworks не в виде списка:')
+    if not isinstance(current_date, int):
+        raise TypeError('Current_date не в виде числа:')
+    return homeworks
 
 
 def parse_status(homework):
@@ -114,7 +117,7 @@ def log_and_inform(bot, message):
 def main():
     """Основная логика работы бота."""
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    status = ''
+    current_timestamp = int(time.time()) - CHECK_TIME
     check_result = check_tokens()
     if not check_result:
         message = 'Не доступны переменные окружения'
@@ -123,18 +126,15 @@ def main():
 
     while True:
         try:
-            current_timestamp = int(time.time()) - CHECK_TIME
             response = get_api_answer(current_timestamp)
-            homework = check_response(response)[0]
-            message = parse_status(homework)
-            if message != status:
+            current_timestamp = response['current_date']
+            if check_response(response):
+                homework = check_response(response)[0]
+                message = parse_status(homework)
                 send_message(bot, message)
-                status = message
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
-            if message != status:
-                send_message(bot, message)
-                status = message
+            send_message(bot, message)
             logging.error(error, exc_info=True)
         finally:
             time.sleep(RETRY_TIME)
