@@ -80,6 +80,8 @@ def check_response(response):
         homework = response.get('homeworks')
     except Exception as error:
         logging.error(f'Ошибка в фомирвоании списка homeworks: {error}')
+    if not isinstance(homework, list):
+        raise TypeError('Ответ не в виде списка:')
     return homework
 
 
