@@ -129,7 +129,7 @@ def main():
                 homework = check_response(response)[0]
                 message = parse_status(homework)
                 send_message(bot, message)
-            current_timestamp = response['current_date']
+                current_timestamp = response.get('current_date')
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
             send_message(bot, message)
