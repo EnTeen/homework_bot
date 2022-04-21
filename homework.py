@@ -57,8 +57,8 @@ def get_api_answer(current_timestamp):
         response = requests.get(ENDPOINT, headers=HEADERS, params=params)
         if response.status_code != HTTPStatus.OK:
             raise Exception('ENDPOINT не отвечает')
-    except requests.exceptions.RequestException as error:
-        raise logging.error("Ошибка запроса к API", error)
+    except requests.exceptions.BaseException as error:
+        raise logging.error(f'Ошибка запроса к API: {error}')
     except Exception:
         raise APIAnswerError('Ошибка API')
     return response.json()
@@ -68,13 +68,10 @@ def check_response(response):
     """Проверяет коректность полученного ответа."""
     if not isinstance(response, dict):
         raise TypeError('Полученный ответ не словарь')
-    if not response['homeworks'] and not response['current_date']:
+    if 'homeworks' not in response or 'current_date' not in response:
         raise IndexError('В ответе нет домашней работы')
-    try:
-        homeworks = response.get('homeworks')
-        current_date = response.get('current_date')
-    except Exception as error:
-        logging.error(f'Ошибка в фомирвоании списка homeworks: {error}')
+    homeworks = response.get('homeworks')
+    current_date = response.get('current_date')
     if not isinstance(homeworks, list):
         raise TypeError('Homeworks не в виде списка:')
     if not isinstance(current_date, int):
@@ -127,7 +124,7 @@ def main():
     while True:
         try:
             response = get_api_answer(current_timestamp)
-            if check_response(response):
+            if len(response) != 0:
                 homework = check_response(response)[0]
                 message = parse_status(homework)
                 send_message(bot, message)
